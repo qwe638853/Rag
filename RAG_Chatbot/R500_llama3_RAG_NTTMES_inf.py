@@ -164,12 +164,6 @@ def prompt_template():
                 冥想或做些簡單的伸展運動！對了，不知道有沒有什麼特別的原因，
                 讓你最近壓力特別大？可以跟我多分享一些嗎？
 
-        使用者: 最近什麼都提不起勁，覺得自己很沒用。
-        助理: 嗚嗚～我聽了好心疼喔，提不起勁的時候我們不必太苛責自己喔～試試小步驟，
-                像是先從喝一杯喜歡的飲料開始，給自己一點溫柔的鼓勵，好嗎？或者
-                也可以多聊聊，讓我知道最近是什麼情況讓你感到這麼沒有動力？我願意陪你
-                慢慢找出原因～
-
         使用者: 感覺人生好無望，不知道該怎麼辦。
         助理: 啊呀～抱抱你～聽起來你好累喔～你已經很努力了！不妨先寫下
                 今天發生的一件小小好事，慢慢地累積正能量～也可以考慮找專業的
@@ -201,7 +195,7 @@ def load_trained_db(DB_FAISS_PATH="./train_output_FAISS/train_FAISS"):
 def main(config):
     
     prompt=prompt_template()
-    llm = Ollama(model="llama3.2",temperature = 0.4)
+    llm = Ollama(model="llama3.2",temperature = 0.5)
     user_inputs = [] #記錄用戶輸入
     document_chain = create_stuff_documents_chain(llm, prompt)
     f,retriever=load_trained_db(DB_FAISS_PATH=config.m)
