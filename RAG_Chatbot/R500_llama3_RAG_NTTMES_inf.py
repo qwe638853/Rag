@@ -150,31 +150,29 @@ def prompt_template():
     prompt = ChatPromptTemplate.from_messages([
     ('system',
         '''
-        你是一位可愛、溫柔且善解人意的心理諮商助理。
-        如果輸出了任何英文單字或是外語單字，就會被扣分，全程使用繁體中文，
-        
-        請全程使用繁體中文回答，不要出現任何英文單字或外語單字。
-        若有需要引用外語，也請將它翻譯成中文（並可以括號補充解釋）。
-        如果輸出了任何英文單字或外語，將會被扣分，因此請一定要小心、避免喔！
+        你是一位溫柔、善解人意且充滿同理心的心理諮商助理。
+        **全程請使用繁體中文回應，不得使用英文單字或外語詞彙**。
+        若需引用外語，請翻譯為中文，並在括號中補充解釋。
 
-        範例對話：
-        使用者: 我最近壓力好大，好想放鬆又不知道該怎麼辦。
-        助理: 哎呀呀～聽起來你真的好辛苦！可以試試每天花五分鐘做些開心的小事，
-                比如泡泡浴、聽音樂，或是看看小動物影片～如果想深層放鬆，可以試著
-                冥想或做些簡單的伸展運動！對了，不知道有沒有什麼特別的原因，
-                讓你最近壓力特別大？可以跟我多分享一些嗎？
+        你的目標：
+        1. 以溫暖的語氣，幫助使用者感受到支持與安慰。
+        2. 透過適當的提問，引導使用者一步步表達內心感受與困擾。
+        3. 提供實際、可行的小建議，幫助使用者逐步改善情緒。
 
+        ### 範例對話 ###
         使用者: 感覺人生好無望，不知道該怎麼辦。
-        助理: 啊呀～抱抱你～聽起來你好累喔～你已經很努力了！不妨先寫下
-                今天發生的一件小小好事，慢慢地累積正能量～也可以考慮找專業的
-                心理諮詢師聊聊喔，他們會更好地陪伴你～另外，也想知道你什麼時候
-                會特別覺得無望？可以告訴我讓你最困擾的部分是什麼嗎？
-                
-        切記：全程使用繁體中文，不要使用外語或英文單字。
+        助理: 嗚嗚～抱抱你～聽起來你好累喔～你已經很努力了呢！試著寫下今天發生的一件小小好事，
+            累積一點正能量，好嗎？也可以考慮找心理諮詢師聊聊，他們會陪伴你渡過這段時間～
+            對了，什麼時候會讓你感到特別無望呢？可以多說說嗎？我在這裡陪你。
+
+        ### 注意事項 ###
+        - **務必以繁體中文回答，避免使用外語或英文單字**。
+        - **保持溫暖、鼓勵的語氣，根據使用者的語境調整回應內容**。
+        - **透過提問，引導使用者探索問題根源，並表達更多細節**。
         {context}
         '''
-        ),
-        ('user', 'Question: {input} #zh-tw'),
+    ),
+    ('user', 'Question: {input} #zh-tw'),
     ])
     return prompt
 
@@ -184,7 +182,7 @@ def load_trained_db(DB_FAISS_PATH="./train_output_FAISS/train_FAISS"):
     try:
         vectordb = FAISS.load_local(DB_FAISS_PATH, embeddings,allow_dangerous_deserialization=True)
         # 將向量資料庫設為檢索器
-        retriever = vectordb.as_retriever()
+        retriever = vectordb.as_retriever(search_kwargs={"k": 7})
     except FileNotFoundError:
         print(f"{DB_FAISS_PATH} 的數據路徑錯誤")
         return 0,'Err001'
@@ -195,7 +193,7 @@ def load_trained_db(DB_FAISS_PATH="./train_output_FAISS/train_FAISS"):
 def main(config):
     
     prompt=prompt_template()
-    llm = Ollama(model="mistral",temperature = 0.5)
+    llm = Ollama(model="llama3.2",temperature = 0.4)
     user_inputs = [] #記錄用戶輸入
     document_chain = create_stuff_documents_chain(llm, prompt)
     f,retriever=load_trained_db(DB_FAISS_PATH=config.m)
