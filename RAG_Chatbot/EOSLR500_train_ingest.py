@@ -12,7 +12,7 @@ from datetime import datetime
 import numpy as np
 import time
 from datetime import timedelta
-DATA_PATH = r"./train_FAISS"
+DATA_PATH = r"./train_data"
 #DB_FAISS_PATH = os.path.join(r"D:/R500-A30335/train_output_FAISS", os.path.basename(DATA_PATH))
 DB_FAISS_PATH = r"./train_output_FAISS"
 

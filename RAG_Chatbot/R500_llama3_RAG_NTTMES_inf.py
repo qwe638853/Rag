@@ -195,7 +195,7 @@ def load_trained_db(DB_FAISS_PATH="./train_output_FAISS/train_FAISS"):
 def main(config):
     
     prompt=prompt_template()
-    llm = Ollama(model="llama3.2",temperature = 0.5)
+    llm = Ollama(model="mistral",temperature = 0.5)
     user_inputs = [] #記錄用戶輸入
     document_chain = create_stuff_documents_chain(llm, prompt)
     f,retriever=load_trained_db(DB_FAISS_PATH=config.m)
