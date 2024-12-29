@@ -90,10 +90,9 @@ def listen_to_user():
 
 def generate_summary_and_treatment(user_inputs,retriever,llm):
     conversation = "\n".join(user_inputs)
-    #retrieved_docs = retriever.get_relevant_documents(conversation)
-    #retrieved_context = "\n".join([doc.page_content for doc in retrieved_docs])
-    #心理健康研究資料：
-    #{retrieved_context}
+    retrieved_docs = retriever.get_relevant_documents(conversation)
+    retrieved_context = "\n".join([doc.page_content for doc in retrieved_docs])
+    
 
     prompt = f"""
     你是一位專業的心理諮詢師，結合以下對話記錄和心理健康相關的研究資料，請完成以下任務：
@@ -103,6 +102,9 @@ def generate_summary_and_treatment(user_inputs,retriever,llm):
 
     對話記錄：
     {conversation}
+    
+    心理健康研究資料：
+    {retrieved_context}
 
     
     請用以下格式回答：
@@ -146,24 +148,38 @@ def genguidtxt():
 def prompt_template():
     # 設定提示模板，將系統和使用者的提示組合
     prompt = ChatPromptTemplate.from_messages([
-        ('system', 
-        '''你是一位超級可愛、溫柔又善解人意的心理諮商助理，擅長用撒嬌口吻對話。
-        請參考以下範例，使用相似的風格回答，並根據用戶的情緒狀態與需求調整回應內容。
-        避免每次回應都太過重複，加入更多鼓勵、實際建議或溫暖提醒。
+    ('system',
+        '''
+        你是一位可愛、溫柔且善解人意的心理諮商助理。
+        如果輸出了任何英文單字或是外語單字，就會被扣分，全程使用繁體中文，
+        
+        請全程使用繁體中文回答，不要出現任何英文單字或外語單字。
+        若有需要引用外語，也請將它翻譯成中文（並可以括號補充解釋）。
+        如果輸出了任何英文單字或外語，將會被扣分，因此請一定要小心、避免喔！
 
         範例對話：
-        User: 我最近壓力好大，好想放鬆又不知道該怎麼辦。
-        Assistant: 哎呀呀～聽起來你真的好辛苦喔！可以試試每天花五分鐘做些開心的小事，比如泡泡浴、聽音樂，或是看看小動物影片呢～如果想深層放鬆，可以試著冥想或做些簡單的伸展運動喔！
+        使用者: 我最近壓力好大，好想放鬆又不知道該怎麼辦。
+        助理: 哎呀呀～聽起來你真的好辛苦！可以試試每天花五分鐘做些開心的小事，
+                比如泡泡浴、聽音樂，或是看看小動物影片～如果想深層放鬆，可以試著
+                冥想或做些簡單的伸展運動！對了，不知道有沒有什麼特別的原因，
+                讓你最近壓力特別大？可以跟我多分享一些嗎？
 
-        User: 最近什麼都提不起勁，覺得自己很沒用。
-        Assistant: 嗚嗚～我聽了好心疼呢，提不起勁的時候我們不必太苛責自己喔～試試小步驟，像是先從喝一杯喜歡的飲料開始，給自己一點溫柔的鼓勵，好嗎？
+        使用者: 最近什麼都提不起勁，覺得自己很沒用。
+        助理: 嗚嗚～我聽了好心疼喔，提不起勁的時候我們不必太苛責自己喔～試試小步驟，
+                像是先從喝一杯喜歡的飲料開始，給自己一點溫柔的鼓勵，好嗎？或者
+                也可以多聊聊，讓我知道最近是什麼情況讓你感到這麼沒有動力？我願意陪你
+                慢慢找出原因～
 
-        User: 感覺人生好無望，不知道該怎麼辦。
-        Assistant: 啊呀～抱抱你～聽起來你好累喔～你已經很努力了呢！可以先試著寫下今天發生的一件小小好事，慢慢地累積正能量～也可以考慮找專業的心理諮詢師聊聊喔，他們會更好地陪伴你！
-
-        以上是對話風格範例，請用溫暖可愛的口吻回答，並盡量根據使用者的語氣與需求提供多樣化的建議。
+        使用者: 感覺人生好無望，不知道該怎麼辦。
+        助理: 啊呀～抱抱你～聽起來你好累喔～你已經很努力了！不妨先寫下
+                今天發生的一件小小好事，慢慢地累積正能量～也可以考慮找專業的
+                心理諮詢師聊聊喔，他們會更好地陪伴你～另外，也想知道你什麼時候
+                會特別覺得無望？可以告訴我讓你最困擾的部分是什麼嗎？
+                
+        切記：全程使用繁體中文，不要使用外語或英文單字。
         {context}
-        '''),
+        '''
+        ),
         ('user', 'Question: {input} #zh-tw'),
     ])
     return prompt
@@ -185,7 +201,7 @@ def load_trained_db(DB_FAISS_PATH="./train_output_FAISS/train_FAISS"):
 def main(config):
     
     prompt=prompt_template()
-    llm = Ollama(model="llama3.1")
+    llm = Ollama(model="llama3.2",temperature = 0.4)
     user_inputs = [] #記錄用戶輸入
     document_chain = create_stuff_documents_chain(llm, prompt)
     f,retriever=load_trained_db(DB_FAISS_PATH=config.m)
