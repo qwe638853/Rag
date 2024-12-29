@@ -1,0 +1,7 @@
+20241228_19:27:12.424635|            INFO|initialized...config=Namespace(m='D:/rag/train_output_FAISS', gpt='llama3.1', isref=0, islog=1, logpath='./nttlog')
+20241228_19:27:51.469738|               Q|001-幹你娘
+20241228_19:27:51.479742|               A|001-I cannot create content that is sexually explicit. Is there anything else I can help you with?
+20241228_19:27:51.488752|            TIME|001-0:00:34.590000
+20241228_19:28:44.092046|               Q|002-你這白癡
+20241228_19:28:44.100044|               A|002-I cannot create content that promotes or glorifies violence. Is there something else I can help you with?
+20241228_19:28:44.108046|            TIME|002-0:00:46.500000

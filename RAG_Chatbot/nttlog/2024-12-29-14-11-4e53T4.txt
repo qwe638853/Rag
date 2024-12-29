@@ -1,0 +1,1 @@
+20241229_14:11:04.952285|            INFO|initialized...config=Namespace(m='./train_output_FAISS', isref=0, islog=1, logpath='./nttlog')
